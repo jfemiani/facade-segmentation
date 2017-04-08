@@ -1,6 +1,6 @@
 # Requires:
 #  conda install scipy scikit-image scikit-learn
-
+import skimage
 import skimage.transform as tf
 from skimage.transform import probabilistic_hough_line
 from skimage.feature import canny
@@ -97,6 +97,7 @@ def _hlines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160
 
 def _vh_lines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160,
               ransac_options=RANSAC_OPTIONS):
+    assert len(lines) > 0, "We need some lines to start with!"
     ctrs = ctrs if ctrs is not None else lines.mean(1)
     vecs = vecs if vecs is not None else lines[:, 1, :] - lines[:, 0, :]
     lengths = lengths if lengths is not None else np.hypot(vecs[:, 0], vecs[:, 1])
@@ -152,7 +153,7 @@ def rectify(image, **kwargs):
 
     see the Homagraphy class documentation for details.
     """
-    h = Homography(img, **kwargs)
+    h = Homography(image, **kwargs)
 
 
 class Homography(object):
@@ -169,20 +170,37 @@ class Homography(object):
         self.opt_options = opt_options
         self.data = img
         self.mask = mask
+        if mask is not None and np.all(mask == False):
+            self.mask = None
+
         self.l, self.w = img.shape[:2]
-        self.lines = _extract_lines(img, mask=mask, min_line_length=min_line_length, max_line_gap=max_line_gap)
-        self.vlines, self.hlines = _vh_lines(self.lines, ransac_options=self.ransac_options)
-        lrud = _solve_lrud(self.hlines, self.vlines, self.w, self.l,
-                           opt_options=opt_options,
-                           opt_method=opt_method)
-        self.dl, self.dr, self.du, self.dd = lrud
-        self.H = H(self.dl, self.dr, self.du, self.dd, self.w, self.l)
-        self.inv_H = np.linalg.inv(self.H)
-        self.rectified = tf.warp(img, self.H)
-        if mask is not None:
-            self.rectified_mask = tf.warp(mask, self.H)
+        self.lines = _extract_lines(img,
+                                    mask=self.mask,
+                                    min_line_length=min_line_length,
+                                    max_line_gap=max_line_gap)
+        if len(self.lines) > 0:
+            self.vlines, self.hlines = _vh_lines(self.lines, ransac_options=self.ransac_options)
+            lrud = _solve_lrud(self.hlines, self.vlines, self.w, self.l,
+                               opt_options=opt_options,
+                               opt_method=opt_method)
+            self.dl, self.dr, self.du, self.dd = lrud
+            self.H = H(self.dl, self.dr, self.du, self.dd, self.w, self.l)
+            self.inv_H = np.linalg.inv(self.H)
+            self.rectified = tf.warp(img, self.H)
+            if mask is not None:
+                self.rectified_mask = tf.warp(mask, self.H)
+            else:
+                self.rectified_mask = None
         else:
-            self.rectified_mask = None
+            self.vlines= []
+            self.hlines= []
+            self.H = np.array([[1,0,0], [0,1,0], [0,0,1]], dtype=float)
+            self.inv_H = self.H
+            self.rectified = img.copy()
+            if self.mask is not None:
+                self.rectified_mask = self.mask.copy()
+            else:
+                self.rectified_mask = None
 
     def inv_transform(self, x):
         return prj(self.inv_H.dot(np.append(x, 1)))

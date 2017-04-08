@@ -1,6 +1,5 @@
-name: "VGG_ILSVRC_16_layer"
 input: "data"
-input_dim: 1
+input_dim: 3
 input_dim: 3
 input_dim: 512
 input_dim: 512
@@ -1024,6 +1023,7 @@ layer {
   dropout_param {
     dropout_ratio: 0.5
     sample_weights_test: true
+
   }
 }
 layer {
@@ -1215,6 +1215,7 @@ layer {
   dropout_param {
     dropout_ratio: 0.5
     sample_weights_test: true
+
   }
 }
 layer {
@@ -1600,10 +1601,10 @@ layer {
   top: "conv1_2_D"
 }
 layer {
-  name: "conv1_1_D"
+  name: "conv-facade"
   type: "Convolution"
   bottom: "conv1_2_D"
-  top: "conv1_1_D"
+  top: "conv-facade"
   param {
     lr_mult: 1.0
     decay_mult: 1.0
@@ -1613,7 +1614,7 @@ layer {
     decay_mult: 0.0
   }
   convolution_param {
-    num_output: 5
+    num_output: 4
     pad: 1
     kernel_size: 3
     weight_filler {
@@ -1624,4 +1625,253 @@ layer {
     }
   }
 }
-
+layer {
+  name: "conv-window"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-window"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-door"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-door"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-cornice"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-cornice"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-sill"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-sill"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-balcony"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-balcony"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-blind"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-blind"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-deco"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-deco"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-molding"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-molding"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-pillar"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-pillar"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "conv-shop"
+  type: "Convolution"
+  bottom: "conv1_2_D"
+  top: "conv-shop"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 4
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
