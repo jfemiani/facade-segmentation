@@ -2,6 +2,7 @@ import os
 
 import pyfacades
 import pyfacades.export_parametric_facade
+import pyfacades.megafacade
 
 
 def find_files(dir, pattern):
@@ -22,7 +23,7 @@ def process_files(files, **kwargs):
         attempts += 1
         failures = []
         for i, f in enumerate(files):
-            mf = pyfacades.export_parametric_facade.MegaFacade()
+            mf = pyfacades.megafacade.MegaFacade()
             try:
                 mf.load_image(f, **kwargs)
                 mf.save_params(**kwargs)
