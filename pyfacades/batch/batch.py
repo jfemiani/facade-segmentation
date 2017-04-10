@@ -2,18 +2,7 @@ import os
 
 import pyfacades
 import pyfacades.export_parametric_facade
-
-
-def find_files(dir, pattern):
-    import fnmatch
-    import os
-
-    matches = []
-    for root, dirnames, filenames in os.walk(dir):
-        for filename in fnmatch.filter(filenames, pattern):
-            matches.append(os.path.join(root, filename))
-
-    return matches
+from pyfacades.util import find_files
 
 
 def process_files(files, **kwargs):
