@@ -154,6 +154,7 @@ def rectify(image, **kwargs):
     see the Homagraphy class documentation for details.
     """
     h = Homography(image, **kwargs)
+    return h.rectified
 
 
 class Homography(object):
@@ -163,8 +164,10 @@ class Homography(object):
                  opt_options=OPTIMIZATION_OPTIONS,
                  mask=None,
                  min_line_length=20,
-                 max_line_gap=3
+                 max_line_gap=3,
+                 angle_tolerance=30
                  ):
+        self.angle_tolerance = angle_tolerance
         self.ransac_options = ransac_options
         self.opt_method = opt_method
         self.opt_options = opt_options
@@ -179,7 +182,11 @@ class Homography(object):
                                     min_line_length=min_line_length,
                                     max_line_gap=max_line_gap)
         if len(self.lines) > 0:
-            self.vlines, self.hlines = _vh_lines(self.lines, ransac_options=self.ransac_options)
+            self.vlines, self.hlines = _vh_lines(self.lines,
+                                                 ransac_options=self.ransac_options,
+                                                 angle_lo=90-self.angle_tolerance,
+                                                 angle_hi=90+self.angle_tolerance
+                                                 )
             lrud = _solve_lrud(self.hlines, self.vlines, self.w, self.l,
                                opt_options=opt_options,
                                opt_method=opt_method)
@@ -238,7 +245,7 @@ class Homography(object):
 
         for line in self.lines:
             p0, p1 = line
-            pylab.plot((p0[0], p1[0]), (p0[1], p1[1]), c='blue')
+            pylab.plot((p0[0], p1[0]), (p0[1], p1[1]), c='blue', alpha=0.3)
 
         for line in self.vlines:
             p0, p1 = line

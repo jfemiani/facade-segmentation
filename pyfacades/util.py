@@ -32,3 +32,15 @@ def colorize(labels, colors):
 
 def replace_ext(f, e):
     return os.path.splitext(f)[0] + e
+
+
+def find_files(dir, pattern):
+    import fnmatch
+    import os
+
+    matches = []
+    for root, dirnames, filenames in os.walk(dir):
+        for filename in fnmatch.filter(filenames, pattern):
+            matches.append(os.path.join(root, filename))
+
+    return matches
