@@ -19,3 +19,22 @@ export PATH=${CAFFE_HOME}\bin:${PATH}
 
 # Troublshooting
 * If a module cannot be found, ```conda install -y modulename```. If that fails, ```pip install modulename```. 
+
+# Examples
+
+## Convert images so that they can be used by labelme.
+```bash
+
+python -m pyfacades.to_labelme --pat=*.png --rectify --debug ~/Downloads/10_April_4_Datasets
+
+# Make a folder on the labelme server and copy the data
+ssh ubuntu@vision.csi.miamioh.edu 'mkdir -p /var/www/html/LabelMe/Images/batch2-rectified'
+scp ./data/for-labelme/*.jpg ubuntu@vision.csi.miamioh.edu:/var/www/html/LabelMe/Images/batch2-rectified
+
+# Rebuild the list of images in the labelme collection
+ssh ubuntu@vision.csi.miamioh.edu 'rm  /var/www/html/LabelMe/annotationCache/DirLists/labelme.txt'
+ssh ubuntu@vision.csi.miamioh.edu 'cd  /var/www/html/LabelMe/annotationTools/sh && ./populate_dirlist.sh'
+
+# Make the starter web pages for the annotators
+ssh ubuntu@vision.csi.miamioh.edu 'cd  /var/www/html/LabelMe && . /make-tables.sh'
+```

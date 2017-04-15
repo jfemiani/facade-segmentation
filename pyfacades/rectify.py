@@ -52,11 +52,26 @@ def H(dleft, dright, dtop, dbottom, width, length):
     return H_v(dleft, dright, width, length).dot(H_h(dtop, dbottom, width, length))
 
 
+from pylab import *
+
+__i__ = 0
 def _extract_lines(img, edges=None, mask=None, min_line_length=20, max_line_gap=3):
+    global __i__
+    __i__ += 1
+
     if edges is None:
         edges = canny(rgb2grey(img))
     if mask is not None:
         edges = edges & mask
+
+    figure()
+    subplot(131)
+    imshow(img)
+    subplot(132)
+    imshow(edges)
+    subplot(133)
+    imshow(mask, cmap=cm.gray)
+    savefig('/home/shared/Projects/Facades/src/data/for-labelme/debug/foo/{:06}.jpg'.format(__i__))
 
     lines = np.array(probabilistic_hough_line(edges, line_length=min_line_length, line_gap=max_line_gap))
 
@@ -72,10 +87,13 @@ def _vlines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160
     points = np.column_stack([ctrs[:, 0], angles])
     point_indices, = np.nonzero((angles > angle_lo) & (angles < angle_hi))
     points = points[point_indices]
-    model_ransac = linear_model.RANSACRegressor(**ransac_options)
-    model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
-    inlier_mask = model_ransac.inlier_mask_
-    valid_lines = lines[point_indices[inlier_mask], :, :]
+    if len(points) > 0:
+        model_ransac = linear_model.RANSACRegressor(**ransac_options)
+        model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
+        inlier_mask = model_ransac.inlier_mask_
+        valid_lines = lines[point_indices[inlier_mask], :, :]
+    else:
+        valid_lines = []
     return valid_lines
 
 
@@ -88,10 +106,13 @@ def _hlines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160
     points = np.column_stack([ctrs[:, 1], angles])
     point_indices, = np.nonzero((angles > angle_lo) & (angles < angle_hi))
     points = points[point_indices]
-    model_ransac = linear_model.RANSACRegressor(**ransac_options)
-    model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
-    inlier_mask = model_ransac.inlier_mask_
-    valid_lines = lines[point_indices[inlier_mask], :, :]
+    if len(points) == 0:
+        model_ransac = linear_model.RANSACRegressor(**ransac_options)
+        model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
+        inlier_mask = model_ransac.inlier_mask_
+        valid_lines = lines[point_indices[inlier_mask], :, :]
+    else:
+        valid_lines = []
     return valid_lines
 
 
@@ -106,7 +127,22 @@ def _vh_lines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=1
             _hlines(lines, ctrs, lengths, vecs, angle_lo, angle_hi, ransac_options=RANSAC_OPTIONS))
 
 
-def _solve_lr(vlines, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method=OPTIMIZATION_METHOD):
+def _solve_lr(vlines, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method=OPTIMIZATION_METHOD, limit=0.3):
+    """ Solve for the left and right edge displacement.
+    This routine estimates the amount to move the upper left and right cornders of the image
+     in a horizontal direction in order to make the given lines parallel and vertical.
+
+    :param vlines: Lines that we want to map to vertical lines.
+    :param w:  The width of the image
+    :param l:   The height of the image
+    :param opt_options: Optimization options passed into `minimize`
+    :param opt_method: The optimization method.
+    :param limit:  A limit on the amount of displacement -- beyond this and we will assume failure.
+    :return: (dl, dr),   the horizontal displacement of the left and right corners.
+    """
+    if len(vlines) == 0:
+        return 0, 0
+
     a = np.append(vlines[:, 0, :], np.ones((len(vlines), 1)), axis=1)
     b = np.append(vlines[:, 1, :], np.ones((len(vlines), 1)), axis=1)
 
@@ -119,10 +155,32 @@ def _solve_lr(vlines, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method=OPTIMIZ
                    options=opt_options,
                    method=opt_method)
     dl, dr = res.x
+
+    # Give up if the solution is not plausible (this indicates that the 'vlines' are too noisy
+    if abs(dl) > limit * w:
+        dl = 0
+    if abs(dr) > limit * w:
+        dr = 0
     return dl, dr
 
 
-def _solve_ud(hlines, dl, dr, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method=OPTIMIZATION_METHOD):
+def _solve_ud(hlines, dl, dr, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method=OPTIMIZATION_METHOD, limit=0.3):
+    """ Solve for the left top and bottom edge displacement.
+    This routine estimates the amount to move the upper left and lower left corners of the image
+    in a vertical direction in order to make the given lines parallel and horizontal.
+
+    :param hlines: Lines that we want to map to horizontal lines.
+    :param w:  The width of the image
+    :param l:   The height of the image
+    :param opt_options: Optimization options passed into `minimize`
+    :param opt_method: The optimization method.
+    :param limit:  A limit on the amount of displacement -- beyond this and we will assume failure.
+                   It is expressed as a fraction of the image height.
+    :return: (dl, dr),   the horizontal displacement of the left and right corners.
+    """
+    if len(hlines) == 0:
+        return 0, 0
+
     a = np.append(hlines[:, 0, :], np.ones((len(hlines), 1)), axis=1)
     b = np.append(hlines[:, 1, :], np.ones((len(hlines), 1)), axis=1)
 
@@ -139,6 +197,12 @@ def _solve_ud(hlines, dl, dr, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method
                    options=opt_options,
                    method=opt_method)
     du, dd = res.x
+
+    # Give up if the result is not plausible. We are better off nor warping.
+    if abs(du) > limit * l:
+        dl = 0
+    if abs(du) > limit * l:
+        dr = 0
     return du, dd
 
 
@@ -184,8 +248,8 @@ class Homography(object):
         if len(self.lines) > 0:
             self.vlines, self.hlines = _vh_lines(self.lines,
                                                  ransac_options=self.ransac_options,
-                                                 angle_lo=90-self.angle_tolerance,
-                                                 angle_hi=90+self.angle_tolerance
+                                                 angle_lo=90 - self.angle_tolerance,
+                                                 angle_hi=90 + self.angle_tolerance
                                                  )
             lrud = _solve_lrud(self.hlines, self.vlines, self.w, self.l,
                                opt_options=opt_options,
@@ -199,9 +263,9 @@ class Homography(object):
             else:
                 self.rectified_mask = None
         else:
-            self.vlines= []
-            self.hlines= []
-            self.H = np.array([[1,0,0], [0,1,0], [0,0,1]], dtype=float)
+            self.vlines = []
+            self.hlines = []
+            self.H = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=float)
             self.inv_H = self.H
             self.rectified = img.copy()
             if self.mask is not None:
