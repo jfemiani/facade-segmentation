@@ -3,7 +3,7 @@ from datetime import date, datetime
 from PIL import Image, ImageDraw
 import xmltodict
 import numpy as np
-
+import os
 
 class Source(object):
     def __init__(self):
@@ -32,6 +32,9 @@ class Polygon(object):
             points = [points]
         self.points = np.array([(int(p.get('x', 0)), int(p.get('y', 0))) for p in points])
 
+    def __iter__(self):
+        for point in points:
+            yield point
 
 TYPE_POLYGON = 'polygon'
 TYPE_BOUNDING_BOX = 'bounding_box'
@@ -67,6 +70,10 @@ class Object(object):
         self.polygon = Polygon()
         self.type = TYPE_POLYGON
 
+    def __iter__(self):
+        for point in self.polygon:
+            yield point
+
     def set_from_dict(self, d):
         """
 
@@ -99,13 +106,17 @@ class ImageSize(object):
         self.nrows = None
         self.ncols = None
 
-    def from_dict(self, d):
+    def set_from_dict(self, d):
+        """
+        :param d: A dictionary with serialized data for this object.
+        :type d: dict
+        """
         self.nrows = d.get('nrows', None)
         self.ncols = d.get('ncols', None)
 
 
 class Annotation(object):
-    def __init__(self):
+    def __init__(self, path=None, collection=None):
         super(Annotation, self).__init__()
 
         self.filename = ""
@@ -123,13 +134,29 @@ class Annotation(object):
         self.imagesize = ImageSize()
         """The size fo the image"""
 
-    def parse_xml(self, f):
+        if collection is None:
+            collection = Collection()
+            if path is not None:
+                collection.guess_from_path(path)
+
+        self.collection = collection
+        """The paths to local annotation and image files"""
+
+        self.path = path
+        """The last annotation file we opened (iff we got it from a file)"""
+
+        if path is not None:
+            self.parse_xml(path)
+
+    def parse_xml(self, f, path=None):
         """
 
         :param f: Either a string of XML or a file-like-object
         :return:
         """
         data = xmltodict.parse(f)
+
+        self.path = path
 
         annotation = data['annotation']
         self.filename = annotation['filename']
@@ -140,7 +167,7 @@ class Annotation(object):
 
         objects = annotation.get('object', [])
 
-        self.imagesize.from_dict(annotation.get('imagesize', {}))
+        self.imagesize.set_from_dict(annotation.get('imagesize', {}))
 
         for o in objects:
             new_object = Object()
@@ -149,3 +176,50 @@ class Annotation(object):
 
     def remove_deleted(self):
         self.objects = [o for o in self.objects if not o.deleted]
+
+    def get_image_path(self):
+        """ Get the path to the image that corresponds to this annotation
+        """
+        root = self.collection.image_root
+        folder = self.folder
+        filename = self.filename
+        return os.path.join(root, folder, filename)
+
+    def get_image(self):
+        """ Get the PIL image for this annotation
+        :rtype: Image.Image
+        :except IOError: If the image file cannot be found or the image cannot be opened.
+        """
+        return Image.open(self.get_image_path())
+
+    def update_image_size(self):
+        """
+        :except IOError: If the file cannot be found or the image cannot be opened.
+        """
+        image = self.get_image()
+        self.imagesize.nrows = image.height
+        self.imagesize.ncols = image.width
+
+    def __iter__(self):
+        for o in self.objects:
+            if not o.deleted:
+                yield o
+
+
+class Collection(object):
+    def __init__(self, root='.', xml_root="Annotations", image_root="Images"):
+        super(Collection, self).__init__()
+        self.root = os.path.abspath(root)
+        self.xml_root = os.path.abspath(os.path.join(self.root, xml_root))
+        self.image_root = os.path.abspath(os.path.join(self.root, image_root))
+
+    def guess_from_path(self, annotation_or_image):
+        path = os.path.abspath(annotation_or_image)
+        folder = os.path.dirname(annotation_or_image)
+        root = os.path.dirname(folder)
+        self.root = root
+        if path.endswith('.jpg'):
+            self.image_root = os.path.basename(folder)
+        elif path.endswith('.xml'):
+            self.xml_root = os.path.basename(folder)
+
