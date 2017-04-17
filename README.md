@@ -1,15 +1,16 @@
 # facade-segmentation
 
 # Installation
-See [](INSTALL.md) for instructions on how to install this code. 
+See [INSTALL.md](INSTALL.md) for instructions on how to install this
+code.
 
 # Development
 
- Before committing to this repo you should install some extensions:
-  
- ```python
-# Suppress output from noteboosk in the repo (to save on repo size)
-conda install -y nbstripout
-nbstripout --install
-```
+I am using PyCharm to develop this code on an Ubuntu Machine with a
+Tesla K40 GPU.
 
+# Example Use-Cases
+
+## To Generate Images for LabelMe
+I am running a LabelMe server on https://vision.csi.miamioh.edu
+To generate images try this:

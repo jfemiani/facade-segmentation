@@ -12,6 +12,14 @@ from pyfacades.rectify import Homography
 from pyfacades.util import channels_first
 
 
+class FacadeStrip(object):
+    def __init__(self):
+        super(FacadeStrip, self).__init__()
+
+    def to_dict(self):
+        pass
+
+
 class MegaFacade(object):
     def __init__(self):
         super(MegaFacade, self).__init__()
@@ -27,24 +35,17 @@ class MegaFacade(object):
         self.facade_feature_map = None
         self.params = []
 
+    def _mask_out_common_obstructions(self):
+        """Mask out the sky and some common objects that can obstruct a sky"""
+        pass
+    
     def load_image(self, path, **kwargs):
         self.data = imread(path)
         self.path = path
+        self._load_image_mask()
+        self._mask_out_common_obstructions()
+        self._rectify_image()
 
-
-
-        # Sometimes an approximate mask can be produced based on Google range data
-        # the mask indicates which parts of the image are not facade
-        mask_path = os.path.join(os.path.dirname(self.path), 'mask.png')
-        if os.path.isfile(mask_path):
-            self.data_mask = rgb2gray(imread(mask_path)) > 0.5
-        else:
-            self.data_mask = None
-
-        # We try to rectify prior to classification to normalize the input.
-        # This can be a cause of failure....
-        self.homography = Homography(self.data, mask=self.data_mask)
-        self.rectified = self.homography.rectified
         self.sky_feature_map = driving.process_strip(channels_first(self.rectified * 255))
         self.facade_feature_map, conf = facade.process_strip(channels_first(self.rectified * 255))
 
@@ -88,6 +89,20 @@ class MegaFacade(object):
 
         self.params = self.process_strips(wall_colors, facade_cuts)
 
+    def _rectify_image(self):
+        # We try to rectify prior to classification to normalize the input.
+        # This can be a cause of failure....
+        self.homography = Homography(self.data, mask=self.data_mask)
+        self.rectified = self.homography.rectified
+
+    def _load_image_mask(self):
+        # Sometimes an approximate mask can be produced based on Google range data
+        # the mask indicates which parts of the image are not facade
+        mask_path = os.path.join(os.path.dirname(self.path), 'mask.png')
+        if os.path.isfile(mask_path):
+            self.data_mask = rgb2gray(imread(mask_path)) > 0.5
+        else:
+            self.data_mask = None
 
     def process_strips(self, stripped, cuts):
         door_scores = facade.model.door(self.facade_feature_map)
