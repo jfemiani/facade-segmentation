@@ -5,6 +5,7 @@ import xmltodict
 import numpy as np
 import os
 
+
 class Source(object):
     def __init__(self):
         super(Source, self).__init__()
@@ -30,11 +31,22 @@ class Polygon(object):
         points = d.pop('pt', [])
         if not isinstance(points, list):
             points = [points]
-        self.points = np.array([(int(p.get('x', 0)), int(p.get('y', 0))) for p in points])
+        self.points = np.array([(int(p.get('x', 0)), int(p.get('y', 0))) for p in points], dtype=int)
+        assert isinstance(self.points, np.ndarray)
 
     def __iter__(self):
-        for point in points:
+        for point in self.points:
             yield point
+
+    def centroid(self):
+        """Get the centroid (mean coordinate) of the polygon.
+        """
+        return self.points.mean(0)
+
+    def bounds(self):
+        """Get the min-max box (top, left, bottom, right) of this polygon.
+        """
+        return tuple(np.roll(self.points.min(0), 1)) + tuple(np.roll(self.points.max(0),1))
 
 TYPE_POLYGON = 'polygon'
 TYPE_BOUNDING_BOX = 'bounding_box'
@@ -68,6 +80,9 @@ class Object(object):
         """An ID assigned to this object (for cross referencing ?)"""
 
         self.polygon = Polygon()
+        """The polygon that bounds this object"""
+        # type self.polygon: Polygon
+
         self.type = TYPE_POLYGON
 
     def __iter__(self):
@@ -116,7 +131,7 @@ class ImageSize(object):
 
 
 class Annotation(object):
-    def __init__(self, path=None, collection=None):
+    def __init__(self, path=None, images_root=None, xml_root=None, collection=None):
         super(Annotation, self).__init__()
 
         self.filename = ""
@@ -141,12 +156,20 @@ class Annotation(object):
 
         self.collection = collection
         """The paths to local annotation and image files"""
+        assert isinstance(self.collection, Collection)
+
+        if images_root is not None:
+            self.collection.images_root = images_root
+
+        if xml_root is not None:
+            self.collection.xml_root = xml_root
 
         self.path = path
         """The last annotation file we opened (iff we got it from a file)"""
 
         if path is not None:
-            self.parse_xml(path)
+            with open(path) as f:
+                self.parse_xml(f)
 
     def parse_xml(self, f, path=None):
         """
@@ -222,4 +245,3 @@ class Collection(object):
             self.image_root = os.path.basename(folder)
         elif path.endswith('.xml'):
             self.xml_root = os.path.basename(folder)
-
