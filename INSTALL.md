@@ -25,7 +25,7 @@ export PATH=${CAFFE_HOME}\bin:${PATH}
 ## Convert images so that they can be used by labelme.
 ```bash
 
-python -m pyfacades.to_labelme --pat=*.png --rectify --debug ~/Downloads/10_April_4_Datasets
+python -m pyfacades.labelme.prepare --pat=*.png --rectify --debug ~/Downloads/10_April_4_Datasets
 
 # Make a folder on the labelme server and copy the data
 ssh ubuntu@vision.csi.miamioh.edu 'mkdir -p /var/www/html/LabelMe/Images/batch2-rectified'
