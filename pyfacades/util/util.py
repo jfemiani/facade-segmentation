@@ -19,10 +19,12 @@ def channels_last(image):
 
 def colorize(labels, colors):
     result = np.zeros(labels.shape + (3,), dtype=np.uint8)
+    if not isinstance(colors, dict):
+        colors = {i: colors[i] for i in range(len(colors))}
     rgb = colors.values()
     indices = colors.keys()
     for i in range(len(indices)):
-        mask = labels == i
+        mask = labels == indices[i]
         color = rgb[i]
         result[mask, 0] = color[0]
         result[mask, 1] = color[1]

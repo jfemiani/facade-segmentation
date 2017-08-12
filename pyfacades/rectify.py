@@ -64,14 +64,15 @@ def _extract_lines(img, edges=None, mask=None, min_line_length=20, max_line_gap=
     if mask is not None:
         edges = edges & mask
 
-    figure()
-    subplot(131)
-    imshow(img)
-    subplot(132)
-    imshow(edges)
-    subplot(133)
-    imshow(mask, cmap=cm.gray)
-    savefig('/home/shared/Projects/Facades/src/data/for-labelme/debug/foo/{:06}.jpg'.format(__i__))
+    # figure()
+    # subplot(131)
+    # imshow(img)
+    # subplot(132)
+    #vimshow(edges)
+    # subplot(133)
+    # if mask is not None:
+    #     imshow(mask, cmap=cm.gray)
+    # savefig('/home/shared/Projects/Facades/src/data/for-labelme/debug/foo/{:06}.jpg'.format(__i__))
 
     lines = np.array(probabilistic_hough_line(edges, line_length=min_line_length, line_gap=max_line_gap))
 
@@ -87,7 +88,7 @@ def _vlines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160
     points = np.column_stack([ctrs[:, 0], angles])
     point_indices, = np.nonzero((angles > angle_lo) & (angles < angle_hi))
     points = points[point_indices]
-    if len(points) > 0:
+    if len(points) > 2:
         model_ransac = linear_model.RANSACRegressor(**ransac_options)
         model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
         inlier_mask = model_ransac.inlier_mask_
@@ -106,7 +107,7 @@ def _hlines(lines, ctrs=None, lengths=None, vecs=None, angle_lo=20, angle_hi=160
     points = np.column_stack([ctrs[:, 1], angles])
     point_indices, = np.nonzero((angles > angle_lo) & (angles < angle_hi))
     points = points[point_indices]
-    if len(points) == 0:
+    if len(points) > 2:
         model_ransac = linear_model.RANSACRegressor(**ransac_options)
         model_ransac.fit(points[:, 0].reshape(-1, 1), points[:, 1].reshape(-1, 1))
         inlier_mask = model_ransac.inlier_mask_
@@ -200,9 +201,9 @@ def _solve_ud(hlines, dl, dr, w, l, opt_options=OPTIMIZATION_OPTIONS, opt_method
 
     # Give up if the result is not plausible. We are better off nor warping.
     if abs(du) > limit * l:
-        dl = 0
-    if abs(du) > limit * l:
-        dr = 0
+        du = 0
+    if abs(dd) > limit * l:
+        dd = 0
     return du, dd
 
 

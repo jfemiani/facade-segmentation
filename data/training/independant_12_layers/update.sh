@@ -1,1 +1,0 @@
-python -m pyfacades.independant_12_layers.ingest_labelme
