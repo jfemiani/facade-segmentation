@@ -1,8 +1,15 @@
 <component name="ProjectDictionaryState">
   <dictionary name="femianjc">
     <words>
+      <w>bgimage</w>
+      <w>caffe</w>
+      <w>conv</w>
       <w>hackishly</w>
       <w>homography</w>
+      <w>ncols</w>
+      <w>nrows</w>
+      <w>programatically</w>
+      <w>ransac</w>
       <w>segnet</w>
       <w>skimage</w>
       <w>softmax</w>

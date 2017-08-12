@@ -2,6 +2,23 @@
 FROM nvidia/cuda:7.5-cudnn5-devel-ubuntu14.04
 MAINTAINER caffe-maint@googlegroups.com
 
+
+# Handy instructions:
+# Install nvidia-docker
+#    https://github.com/NVIDIA/nvidia-docker/wiki/Installation
+#
+# I will ASSUME you are in the top level directory of this repo when you type this...
+#
+# To build the image:
+#
+#    nvidia-docker build -t facades docker/gpu
+#
+# To start the container:
+#
+#    sudo nvidia-docker run -it -v ${PWD}:/workspace facades
+#
+
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
@@ -46,7 +63,18 @@ ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
+# This is used by the finish-training.sh script to set the I12 caffe model weights in an
+# environment variable.
+RUN apt-get install coreutils
+
 VOLUME /workspace
 WORKDIR /workspace
+
+# Expose some ports for http or ipynb
+# EXPOSE 80
+# EXPOSE 8888
+
+# Add files to the container
+# ADD ../.. /app
 
 CMD /bin/bash

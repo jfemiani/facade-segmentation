@@ -1,18 +1,18 @@
+""" Prepare images to go out to the LabelMe site.
+"""
+
 import os
 import urlparse
-
-import sys
-
-import skimage
-from scipy.misc import imread, imsave
 import zipfile
+
 import numpy as np
+from scipy.misc import imread, imsave
 
 import pyfacades
-from pyfacades.rectify import rectify, Homography
+import pyfacades.models.driving_12x360x480.model
+import pyfacades.models.driving_12x360x480.segment
+from pyfacades.rectify import rectify
 from pyfacades.util import find_files, channels_first
-import pyfacades.driving_12x360x480.segment
-import pyfacades.driving_12x360x480.model
 
 
 def rename_file(filename, basedir):
@@ -23,8 +23,8 @@ def rename_file(filename, basedir):
 
 
 def rectify_building(image, meta=None):
-    labels = pyfacades.driving_12x360x480.segment.process_strip(channels_first(image))
-    non_rectangular = building = np.argmax(labels, 0) == pyfacades.driving_12x360x480.model.BUILDING
+    labels = pyfacades.models.driving_12x360x480.segment.process_strip(channels_first(image))
+    non_rectangular = building = np.argmax(labels, 0) == pyfacades.models.driving_12x360x480.model.BUILDING
     h = pyfacades.rectify.Homography(image, mask=non_rectangular)
 
     if meta is not None:

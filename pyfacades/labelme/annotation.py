@@ -6,6 +6,7 @@ import numpy as np
 import os
 
 
+
 class Source(object):
     def __init__(self):
         super(Source, self).__init__()
@@ -31,7 +32,7 @@ class Polygon(object):
         points = d.pop('pt', [])
         if not isinstance(points, list):
             points = [points]
-        self.points = np.array([(int(p.get('x', 0)), int(p.get('y', 0))) for p in points], dtype=int)
+        self.points = np.array([(float(p.get('x', 0)), float(p.get('y', 0))) for p in points], dtype=float)
         assert isinstance(self.points, np.ndarray)
 
     def __iter__(self):
@@ -89,6 +90,47 @@ class Object(object):
         for point in self.polygon:
             yield point
 
+    def bounds(self):
+        """
+        :return: top, left, bottom, right
+        """
+        return self.polygon.bounds()
+
+    def get_mask(self, fill=1, outline=0):
+        """
+        Get a mask that is nonzero within the object.
+        :param fill:  A color to use on the object's interior
+        :param outline: A color to use on the object's edge (single pixel)
+        :return: A 2D numpy array of uint8
+        """
+        if self.type in (TYPE_POLYGON, TYPE_BOUNDING_BOX):
+            (top, left, bottom, right) = self.polygon.bounds()
+            w = right-left
+            h = bottom-top
+            mask = Image.new("I", (w, h))
+            d = ImageDraw.Draw(mask)
+            d.polygon([(px-left, py-top) for (px, py) in self.polygon.points],
+                        fill=fill, outline=outline)
+            del d
+            return np.asarray(mask)
+        else:
+            assert False, "Unhandled Type"
+
+    def draw(self, image, fill=1, outline=0):
+        if not isinstance(image, Image.Image):
+            image2 = Image.fromarray(image)
+        else:
+            image2 = image
+
+        d = ImageDraw.Draw(image2)
+        d.polygon([(px, py) for (px, py) in self.polygon.points],
+                  fill=fill, outline=outline)
+        del d
+
+        if image2 is not  image:
+            image[...] = np.asarray(image2)
+        return image
+
     def set_from_dict(self, d):
         """
 
@@ -105,8 +147,11 @@ class Object(object):
         # TODO: Do not know how to handle this
         parts = d.pop('parts', {})
 
-        date = d.pop('date')
-        self.date = datetime.strptime(date, "%d-%b-%Y %H:%M:%S")
+        try:
+            date = d.pop('date')
+            self.date = datetime.strptime(date, "%d-%b-%Y %H:%M:%S")
+        except:
+            print("Object", self.name, "is missing a date")
 
         self.id = int(d.pop('id'))
 
@@ -159,7 +204,7 @@ class Annotation(object):
         assert isinstance(self.collection, Collection)
 
         if images_root is not None:
-            self.collection.images_root = images_root
+            self.collection.image_root = images_root
 
         if xml_root is not None:
             self.collection.xml_root = xml_root
@@ -189,11 +234,17 @@ class Annotation(object):
             self.source.from_dict(annotation['source'])
 
         objects = annotation.get('object', [])
+        if isinstance(objects, dict):
+            objects = [objects]
 
         self.imagesize.set_from_dict(annotation.get('imagesize', {}))
 
         for o in objects:
             new_object = Object()
+            if not isinstance(o, dict):
+                print o
+                print type(o)
+                import ipdb; ipdb.set_trace()
             new_object.set_from_dict(o)
             self.objects.append(new_object)
 

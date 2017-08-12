@@ -62,6 +62,7 @@ class InputLayer(caffe.Layer):
         # do your magic here... feed **one** batch to `top`
 
         for i in range(self.batch_size):
+            print self.files[self.counter]
             current = np.load(self.files[self.counter])
 
             self._transform(current)
@@ -70,6 +71,8 @@ class InputLayer(caffe.Layer):
             labels = current[3:]
             top[0].data[i, ...] = data
             for j in range(1, len(labels)):
+                if np.all(labels[j] == 1):
+                    labels[j][0, :] = 0
                 top[j].data[i, ...] = labels[j]
             self.counter += 1
 

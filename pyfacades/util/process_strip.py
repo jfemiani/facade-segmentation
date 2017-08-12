@@ -6,6 +6,8 @@ from skimage.transform import rescale
 def split_tiles(image, shape, overlap=16):
     """ Rescale and split the input images to get several overlapping images of a given shape.
 
+    *** The inpput must be CHANNELS FIRST ***
+
     The input image is rescaled so that height matches the output height.
     It is split into possibly overlapping tiles, each sized to match the output shape
     """
@@ -35,7 +37,7 @@ def split_tiles(image, shape, overlap=16):
     #   -- The remaining tiles each overlap with the following tile. The width of uncovered portion
     #      evenly divides the rest of the strip
     #   -- I need an integer number of tiles to cover the remaining strip (so I use a ceil)
-    num_tiles = 1 + int(np.ceil((scaled_width - output_width) / float(output_width - overlap)))
+    num_tiles = 1 + int(np.ceil(max(0, (scaled_width - output_width)) / float(output_width - overlap)))
     for x in np.linspace(0, scaled_width - output_width, num_tiles):
         yield scaled_image[:, :, int(x):int(x) + output_width]
 
@@ -60,7 +62,8 @@ def combine_tiles(images, output_shape):
 
     if oh != th:
         s = float(th) / oh
-        result = combine_tiles(images, (tc, th, int(ow * s)))
+        # The scaled-down image, after tiles are combined, must still be at least one pixel wide (!)
+        result = combine_tiles(images, (tc, th, max(1, int(ow * s))))
         # noinspection PyTypeChecker
         result = result.transpose(1, 2, 0)  # Change to channels-last for skimage
         result = skimage.transform.resize(result, (oh, ow, oc), preserve_range=True)
