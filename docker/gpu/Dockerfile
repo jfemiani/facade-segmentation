@@ -104,7 +104,7 @@ RUN echo backend: Agg > ${MATPLOTLIBRC}/matplotlibrc
 
 # Add files to the container
 WORKDIR /opt
-RUN git clone https://github.com/jfemiani/facade-segmentation /opt/facades
+RUN git clone  https://github.com/jfemiani/facade-segmentation /opt/facades
 
 ENV PYTHONPATH=/opt/facades:${PYTHONPATH}
 RUN ln -s /opt/facades/scripts/i12-inference/generate /usr/bin/i12-inference
