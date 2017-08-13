@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# USAGE:
+#   source scripts/i12-inference/generate <path/to/dataset.txt> [<version-number>]
+# Where <path/to/dataset.txt> is the name of text file (e.g. scripts/jobs/congo-cock.txt) and
+# where <version-number> is any tag that lets you distinguish between multiple runs (e.g. 3)
+# The output will be something like: /output/congo-cock-v3/<path as described in dataset.txt>
+
+# Note that the txt files have the input and the (relative) output paths, one per line.
+
+# This script is just to help me remember which settings / etc. I am using to organize the
+# input and output. It just copies some files around and runs 'pyfacades'
+
+
+# Since we keep re-running the same area with newer versions of the code,
+# I wrote this bit to add a tag and version number to the output folder.
+DS=$(basename -s .txt $1)
+if [ "$2" != "" ]; then
+    VERSION=$2
+    OUT="$DS-v$VERSION"
+else
+    VERSION=$1
+    OUT=$DS
+fi
+
+# When you run this from a dockerized container, the /output volume
+# should be connected to a folder on the host machine using
+#   -v /full/path/to/output:/output
+OUTPUT="/output/${OUT}"
+
+echo dataset is ${DS}.txt
+echo output is ${OUTPUT}
+
+mkdir -p "${OUTPUT}"
+cp $1 "${OUTPUT}"
+
+python -m pyfacades --plot --resume --no-use-mask --output "${OUTPUT}" --files $1
+
+zip "${OUTPUT}.zip" -ur "${OUTPUT}"

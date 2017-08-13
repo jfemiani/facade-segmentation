@@ -198,7 +198,7 @@ class FacadeCandidate(object):
         try:
             #Sometimes the skyline is too high
             percent_up = 0.66
-            top_line = percent_up*sky_line + (1-percent_up)*door_line
+            top_line = int(percent_up*sky_line + (1-percent_up)*door_line)
             main_color = ransac_guess_color(rgb_strip[top_line:door_line])
         except AssertionError:
             main_color = np.array([1, 1, 1])
@@ -704,8 +704,6 @@ def main(argv=None):
         print "--", basename(files[i]), "({:0.2f}s, {:0.2f}+{:0.2f})".format(total_time, output_time, plotting_time)
 
 
-if __name__ == '__main__':
-    main()
 
 
 def ransac_guess_color(colors, n_iter=50, std=2):
@@ -772,3 +770,6 @@ def extract_boxes_as_dictionaries(image, threshold=0.5, se=disk(3)):
     except (ValueError, TypeError) as e:
         result = []
     return result
+
+if __name__ == '__main__':
+    main()
