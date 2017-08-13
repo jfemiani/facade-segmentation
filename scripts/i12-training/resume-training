@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+ITER=$(python get_iter.py /home/shared/Projects/Facades/mybook/facade_iter_*.caffemodel)
+caffe.bin train -solver=solver.prototxt -snapshot /home/shared/Projects/Facades/mybook/facade_iter_${ITER}.solverstate -gpu=0

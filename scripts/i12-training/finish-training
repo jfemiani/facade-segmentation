@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+ITER=$(python get_iter.py /home/shared/Projects/Facades/mybook/facade_iter_*.caffemodel)
+TS=$(date  "+%Y-%M-%d-%H%M")
+
+mkdir -p deploy
+python compute_bn_statistics.py training-net.prototxt /home/shared/Projects/Facades/mybook/facade_iter_${ITER}.caffemodel deploy
+
+# Add timestamps
+cp deploy/test_weights.caffemodel deploy/test_weights.caffemodel.${ITER}.${TS}
+#cp deploy/deploy.prototxt deploy/deploy.prototxt.${TS}
+export I12_WEIGHTS=$(realpath deploy/test_weights.caffemodel)

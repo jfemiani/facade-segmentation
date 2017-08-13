@@ -1,16 +1,29 @@
 # facade-segmentation
 
 # Installation
-See [INSTALL.md](INSTALL.md) for instructions on how to install this
-code.
+See the Dockerfile in docker/gpu. 
+You may install use nvidia-docker to run this code (run start-machine.sh) or you may 
+consider it as instructions on how to configure your own machine. 
 
 # Development
 
 I am using PyCharm to develop this code on an Ubuntu Machine with a
-Tesla K40 GPU.
+Tesla K40 GPU. 
 
-# Example Use-Cases
+# Example 
+First, edit `start-machine.sh` so that you mount an appropriate folder 
+for input as `/data` and one for output as `/output`. They can be the
+same folders if you want to process data in-place.
 
-## To Generate Images for LabelMe
-I am running a LabelMe server on https://vision.csi.miamioh.edu
-To generate images try this:
+```bash
+source start-machine.sh
+```
+Then you should find yourself inside a bash shell of a docker image as root
+
+To process a list of files use:
+
+```bash
+source inference ~/code/scripts/jobs/one-file.txt
+```
+
+
