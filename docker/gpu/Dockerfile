@@ -89,9 +89,7 @@ VOLUME /output
 # Use -v /path/to/data:/data in order to provide your data
 VOLUME /data
 
-# This is the path to the code [from the same github repo as this dockerfile]
-VOLUME /workspace
-WORKDIR /workspace
+
 
 # I generate plots (often to files), and this does not work by default on systems without
 # an X-server setup properly (such as docker images...) so I am setting it up to use Agg for plotting.
@@ -100,20 +98,18 @@ RUN mkdir -p ${MATPLOTLIBRC}
 RUN echo backend: Agg > ${MATPLOTLIBRC}/matplotlibrc
 
 
-
-
 # Expose some ports for http or ipynb
 # EXPOSE 80
 # EXPOSE 8888
 
 # Add files to the container
-RUN mkdir ~/code
-ADD pyfacades/ ~/code/pyfacades
-ADD scripts/ ~/code/scripts
+WORKDIR /opt
+RUN git clone https://github.com/jfemiani/facade-segmentation /opt/facades
 
-ENV PYTHONPATH=~/code:${PYTHONPATH}
+ENV PYTHONPATH=/opt/facades:${PYTHONPATH}
+RUN ln -s /opt/facades/scripts/i12-inference/generate /usr/bin/i12-inference
+RUN ln -s /opt/facades/scripts/i12-inference/generate /usr/bin/inference
 
-RUN ln -s ~/code/script/i12-inference/generate inference
-
-
+VOLUME /workspace
+WORKDIR /workspace
 CMD /bin/bash
