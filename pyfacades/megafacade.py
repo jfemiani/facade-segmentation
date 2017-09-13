@@ -619,8 +619,10 @@ def main(argv=None):
     from os.path import join, basename, splitext
     from time import time
 
-    p = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument('patterns', nargs='*')
+    p = argparse.ArgumentParser(prog='pyfacades',
+                                formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p.add_argument('patterns', nargs='*',
+                   help="Wildcards or filenames of facade images to process.")
     p.add_argument('--files',
                    help="A text file with the relative paths of images to process",
                    default='')
@@ -629,8 +631,7 @@ def main(argv=None):
                    default=i12.WEIGHTS)
     p.add_argument('--output', '-o',
                    help="The output folder. Will be created if it does not exist. ",
-                   default=join(os.getcwd(), 'facades'))
-
+                   default='/output')
     p.add_argument('--plot',
                    action='store_true',
                    help="Generate various diagnostic plots")
@@ -658,6 +659,10 @@ def main(argv=None):
                         for filename in col2]
         files += more_files
         outputs += more_outputs
+
+    if len(files) == 0:
+        p.print_usage()
+        return
 
     # Set up the net / GPU
     caffe.set_mode_gpu()
