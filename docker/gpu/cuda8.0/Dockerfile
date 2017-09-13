@@ -1,5 +1,5 @@
 # from https://github.com/BVLC/caffe/blob/master/docker/standalone/gpu/Dockerfile
-FROM nvidia/cuda:7.5-cudnn3-devel-ubuntu14.04
+FROM nvidia/cuda:8.0-devel-ubuntu14.04
 MAINTAINER femianjc@miamioh.edu
 
 
@@ -17,6 +17,21 @@ MAINTAINER femianjc@miamioh.edu
 #
 #    sudo nvidia-docker run -it -v ${PWD}:/workspace facades
 #
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV CUDNN_VERSION 3.0.7
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+# cuDNN license: https://developer.nvidia.com/cudnn/license_agreement
+RUN CUDNN_DOWNLOAD_SUM=98679d5ec039acfd4d81b8bfdc6a6352d6439e921523ff9909d364e706275c2b && \
+    curl -fsSL http://developer.download.nvidia.com/compute/redist/cudnn/v3/cudnn-7.0-linux-x64-v3.0-prod.tgz -O && \
+    echo "$CUDNN_DOWNLOAD_SUM  cudnn-7.0-linux-x64-v3.0-prod.tgz" | sha256sum -c --strict - && \
+    tar --no-same-owner -xzf cudnn-7.0-linux-x64-v3.0-prod.tgz -C /usr/local && \
+    rm cudnn-7.0-linux-x64-v3.0-prod.tgz && \
+    ldconfig
 
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -39,11 +54,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-numpy \
         python-pip \
         python-scipy \
-        vim && \
+        vim \
+        coreutils && \
     rm -rf /var/lib/apt/lists/*
 
 # Used by the facade processing shell scripts in order to package up our results
-RUN apt-get install zip
+RUN apt-get update && apt-get install -y --no-install-recommends zip && rm -rf /var/lib/apt/lists/*
 
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
@@ -80,7 +96,7 @@ RUN make -j pycaffe
 
 #NOTE: I am considering shipping a Jupyter interface to help guide people through
 #      the software, but for processing lot's of data I prefer bash
-RUN pip install jupyter scipy xmltodict configargparse
+RUN pip install jupyter scipy
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
@@ -92,21 +108,11 @@ RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 ENV LD_LIBRARY_PATH=${CAFFE_ROOT}/build/lib:$LD_LIBRARY_PATH
 
 
-# This is used by the finish-training.sh script to set the I12 caffe model weights in an
-# environment variable.
-RUN apt-get install coreutils
-
-
-
-#NOTE: I am not sure what the purpose of a 'VOLUME' in a Dockerfile is, as it seems that
-#      you still have to
-# This is a volume used to hold the output
-# Use -v /path/to/output:/output in order to preserve the output
-VOLUME /output
 
 # This is a voume used to hold the data
 # Use -v /path/to/data:/data in order to provide your data
 VOLUME /data
+VOLUME /output
 
 
 # I generate plots (often to files), and this does not work by default on systems without
