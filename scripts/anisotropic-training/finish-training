@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+TS=$(date  "+%Y-%M-%d-%H%M")
+
+mkdir -p deploy
+python -i compute_bn_statistics.py modified-training-net.prototxt $(./get_iter.py -m) deploy
+
+# Add timestamps
+cp deploy/test_weights.caffemodel deploy/test_weights.caffemodel.$(./get_iter.py).${TS}
+#cp deploy/deploy.prototxt deploy/deploy.prototxt.${TS}
+export ANISOTROPIC_WEIGHTS=$(realpath deploy/test_weights.caffemodel)

@@ -1,0 +1,10 @@
+#@IgnoreInspection BashAddShebang
+
+# THIS SCRIPT MUST BE RUN USING 'SOURCE', NOT IN A SUBSHELL!
+# Use `source set-model`  or `. set-model`
+# do NOT use `./set-model`
+
+# You see, all I am doing is setting an environment variable so I _must_
+# have access to your environment (!)
+
+export I12_WEIGHTS=/home/shared/Projects/Facades/src/training/i12/deploy/test_weights.caffemodel
