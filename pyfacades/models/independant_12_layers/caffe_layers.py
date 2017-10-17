@@ -34,6 +34,7 @@ class InputLayer(caffe.Layer):
         self.counter = 0
         self.source = 'output_stacks2'
         self.files = glob(os.path.join(self.source, '*.npy'))
+        self.verbose = True
 
     # noinspection PyMethodOverriding
     def setup(self, bottom, top):
@@ -62,7 +63,8 @@ class InputLayer(caffe.Layer):
         # do your magic here... feed **one** batch to `top`
 
         for i in range(self.batch_size):
-            print self.files[self.counter]
+            if self.verbose:
+                print self.files[self.counter]
             current = np.load(self.files[self.counter])
 
             self._transform(current)
