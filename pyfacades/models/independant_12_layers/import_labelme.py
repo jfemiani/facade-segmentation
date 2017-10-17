@@ -29,7 +29,11 @@ EDGE_WIDTH = 3
 DEFAULT_LABELME_INPUT = join(pyfacades.DATA_ROOT, 'from_labelme')
 DEFAULT_TRAINING_OUTPUT = join(pyfacades.DATA_ROOT, 'training', 'independant_12_layers')
 
-
+def _mkdirp(d):
+    try:
+        os.makedirs(d)
+    except OSError as e:
+        pass #Already exists
 
 class SingleLayerLabels(object):
     def __init__(self, annotation, nrows=512, ncols=None):
@@ -243,11 +247,11 @@ class MultiLayerLabels(object):
         cols = int(np.ceil(self.nlayers/rows))
         # noinspection PyUnresolvedReferences
         pallette = {i:rgb for (i, rgb) in enumerate(pl.cm.jet(np.linspace(0, 1, 4), bytes=True))}
-        f, a = pl.subplots(rows, cols)
+        f = pl.gcf()
+        
         f.set_size_inches(6 * cols, 6 * rows)
-        a = a.flatten()
         for i, label in enumerate(self.label_names):
-            pl.sca(a[i])
+            pl.subplot(rows, cols, i+1)
             pl.title(label)
             pl.imshow(self.color_data)
             pl.imshow(colorize(self.label_data[:, :, i], pallette), alpha=0.5)
@@ -293,27 +297,27 @@ def main():
         print "Not cleaning"
 
     if args.summary:
-	print "# Generating a summary of labels only. No other processing will occure."
-	labels = pyfacades.models.independant_12_layers.LABELS
-	labels += ['tree', 'sky', 'occlusion', 'unknown']
+        print "# Generating a summary of labels only. No other processing will occure."
+        labels = pyfacades.models.independant_12_layers.LABELS
+        labels += ['tree', 'sky', 'occlusion', 'unknown']
         fields = ['index','name']+labels
         print ',\t'.join(fields)
-	for i in range(len(xml_files)):
+        for i in range(len(xml_files)):
             values = ['']*len(fields)
             values[0] = '{} of {}'.format(i+1, len(xml_files))
-	    values[1] = basename(xml_files[i])
-	    annotations = Annotation(xml_files[i],
+            values[1] = basename(xml_files[i])
+            annotations = Annotation(xml_files[i],
                                      images_root=img_root,
                                      xml_root=xml_root)
             assert isinstance(annotations, Annotation)
             annotations.remove_deleted()
             annotations.update_image_size()
 
-	    for label in labels:
-	        objects = [o for o in annotations.objects if o.name.lower() == label]
-		values[fields.index(label)] = str(len(objects))
-	    print ',\t'.join(values)
-        return 
+            for label in labels:
+                objects = [o for o in annotations.objects if o.name.lower() == label]
+                values[fields.index(label)] = str(len(objects))
+                print ',\t'.join(values)
+                return 
             
 
     # Clean any old outputs
@@ -354,7 +358,7 @@ def main():
         data.mark_all()
 
         # Ignore some labels completely
-        if args.ignore != '':
+        if args.ignore and args.ignore != '':
             for label in args.ignore.split(','):
                 assert label in data.label_names
                 index = data.label_names.index(label)
@@ -364,11 +368,15 @@ def main():
         ensure_unignored_labels(annotations, data)
 
         if args.plot:
-            pl.close('all')
             pl.suptitle(basename(training_outputs[i]))
-            data.plot().savefig(plot_outputs[i], dpi=100)
+            data.plot()
+            pl.gcf().canvas.draw(); pl.pause(0.0001)
+            if _mkdirp(os.path.dirname(plot_outputs[i])):
+                os.makedirs(os.path.dirname(plot_outputs[i]))
+            pl.savefig(plot_outputs[i], dpi=100)
             print 'figure and',
 
+        _mkdirp(os.path.dirname(training_outputs[i]))
         data.save_tiles(training_outputs[i], args.tilesize[1], args.tilesize[0])
         print 'labels saved.',
         labels_found = sorted(np.unique([o.name for o in annotations.objects]))

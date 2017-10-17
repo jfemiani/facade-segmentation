@@ -87,3 +87,15 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Data (should be downloaded from elsewhere)
+data/
+#  except for the one test example...
+!data/cock-congo/cock/0/0/mask.png
+!data/cock-congo/cock/0/0/meta.png
+!data/cock-congo/cock/0/0/orthographic.png
+
+.idea
+.zip
+
+scripts/tmp
