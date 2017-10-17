@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+caffe.bin train -solver=solver.prototxt -snapshot $(./get_iter.py -s) -gpu=0
