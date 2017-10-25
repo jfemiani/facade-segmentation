@@ -41,7 +41,7 @@ I will try to describe how to use it here:
    ```
    You will need a good amount of RAM available (e.g. 32Gb). 
 
-# Basic Demo
+# Command Line Demo
 
 To start the docker image you may also use:
 ```
