@@ -3,7 +3,7 @@
 # Installation
 See the Dockerfile in docker/gpu. 
 You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code 
-(run start-machine.sh) or you may consider the Dockerfile as instructions on how to configure your own machine. 
+(run `cd docker/gpu && source build-docker-image.sh`) or you may consider the Dockerfile as instructions on how to configure your own machine. 
 In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
 
 # Jupyter Demo
