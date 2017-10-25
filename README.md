@@ -18,7 +18,7 @@ export MYPORT=8888
 mkdir -p /tmp/segnet-facade/output
 mkdir -p /tmp/segent-facade/input
 export MYINPUT=/tmp/segent-facade/input
-esport MYOUTPUT=/tmp/segnet-facade/output
+export MYOUTPUT=/tmp/segnet-facade/output
 ```
 3. Now you can run a jupyter server using my docker image:
 ```bash
