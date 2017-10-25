@@ -10,33 +10,33 @@ In this README I will assume you have followed the installation instructions for
 I have put jupyter on the docker image so that you can follow along with a simple tutorial in [`scripts/process.ipynb`](scripts/process.ipynb). 
 I will try to describe how to use it here:
 1. Figure out which port you want to use for a jupyter server; the default is port 8888, but you may already be serving a jupyter notebook on that port (if you are not currently using jupyter, just remember that the port is 8888).  Once you have settled on a port, let's save it to an environment variable:
-```bash
-export MYPORT=8888
-```
+   ```bash
+   export MYPORT=8888
+   ```
 2. You will probably want to produce output to a folder on your computer, and you may also want to provide your own inputs via a folder on your computer. For now, I will asume that that the input and output will be placed under your `/tmp` directory. Let's set some environment variables for our input and output locations. 
-```bash
-mkdir -p /tmp/segnet-facade/output
-mkdir -p /tmp/segent-facade/input
-export MYINPUT=/tmp/segent-facade/input
-export MYOUTPUT=/tmp/segnet-facade/output
-```
+    ```bash
+    mkdir -p /tmp/segnet-facade/output
+    mkdir -p /tmp/segent-facade/input
+    export MYINPUT=/tmp/segent-facade/input
+    export MYOUTPUT=/tmp/segnet-facade/output
+    ```
 3. Now you can run a jupyter server using my docker image:
-```bash
-nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
-    jfemiani/segnet-facade jupyter notebook --allow-root --ip=* --port ${MYPORT} \
-    /opt/facades/scripts/process.ipynb
-```
+    ```bash
+    nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
+        jfemiani/segnet-facade jupyter notebook --allow-root --ip=* --port ${MYPORT} \
+        /opt/facades/scripts/process.ipynb
+    ```
 4. You should see a link on your terminal to `http://localhost:8888/<a bunch of randomy text>`. Copy and paste the link into your browser. 
 
 5. Run each line of the jupyter notebook in order to go through the segmentation process one step at a time. You may also
    _edit_ those cells to process your own data or to use the CPU instead of the GPU.  For example you can replace the line
    that says
-   ```
+   ```python
    caffe.set_device(0)
    caffe.set_mode_gpu()
    ```
    with this:
-   ```
+   ```python
    caffe.set_mode_cpu()
    ```
    You will need a good amount of RAM available (e.g. 32Gb). 
