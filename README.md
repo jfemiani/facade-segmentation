@@ -4,8 +4,32 @@
 See the Dockerfile in docker/gpu. 
 You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code 
 (run start-machine.sh) or you may consider the Dockerfile as instructions on how to configure your own machine. 
-
 In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
+
+# Jupyter Demo
+I have put jupyter on the docker image so that you can follow along with a simple tutorial in `scripts/process.ipynb`. 
+I will try to describe how to use it here:
+1. Figure out which port you want to use for a jupyter server; the default is port 8888, but you may already be serving a jupyter notebook on that port (if you are not currently using jupyter, just remember that the port is 8888).  Once you have settled on a port, let's save it to an environment variable:
+```bash
+export MYPORT=8888
+```
+2. You will probably want to produce output to a folder on your computer, and you may also want to provide your own inputs via a folder on your computer. For now, I will asume that that the input and output will be placed under your `/tmp` directory. Let's set some environment variables for our input and output locations. 
+```bash
+mkdir -p /tmp/segnet-facade/output
+mkdir -p /tmp/segent-facade/input
+export MYINPUT=/tmp/segent-facade/input
+esport MYOUTPUT=/tmp/segnet-facade/output
+```
+3. Now you can run a jupyter server using my docker image:
+```bash
+nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
+    jfemiani/segnet-facade jupyter notebook --allow-root --port ${MYPORT} \
+    /opt/facades/scripts/process.ipynb
+```
+4. You should see a link on your terminal to `http://localhost:8888/<a bunch of randomy text>`. Copy and paste the link into your browser. 
+
+
+# Basic Demo
 
 To start the docker image you may also use:
 ```
@@ -20,7 +44,7 @@ which will put you in a bash shell, with the code from this git repo under `/opt
 
 Once you are in the docker image's shell, type:
 ```bash
-cp /opt/facades/data/cock-congo /data
+cp -r /opt/facades/data/cock-congo /data
 cp /opt/facades/scripts/jobs/one-file.txt /data
 
 inference /data/one-file.txt
