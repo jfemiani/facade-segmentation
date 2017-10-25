@@ -7,7 +7,7 @@ You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Ins
 In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
 
 # Jupyter Demo
-I have put jupyter on the docker image so that you can follow along with a simple tutorial in `scripts/process.ipynb`. 
+I have put jupyter on the docker image so that you can follow along with a simple tutorial in [`scripts/process.ipynb`](scripts/process.ipynb). 
 I will try to describe how to use it here:
 1. Figure out which port you want to use for a jupyter server; the default is port 8888, but you may already be serving a jupyter notebook on that port (if you are not currently using jupyter, just remember that the port is 8888).  Once you have settled on a port, let's save it to an environment variable:
 ```bash
