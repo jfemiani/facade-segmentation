@@ -1,9 +1,12 @@
 # SEGNET-FACADE
 
 # Installation
-See the Dockerfile in docker/gpu. 
-You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code 
-(run `cd docker/gpu && source build-docker-image.sh`) or you may consider the Dockerfile as instructions on how to configure your own machine. 
+
+You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code. I have already built a machine and put it on Dockerhub [jfemiani'segnet-facade](https://hub.docker.com/r/jfemiani/segnet-facade/) . You should be able to use that once `nvidia-docker` is installed, but you may also wish to build your own image. To do that  run 
+```
+cd docker/gpu && source build-docker-image.sh
+```
+You may also consider the Dockerfile in [docker/gpu/Dockerfile](docker/gpu/Dockerfile) as instructions on how to configure your own machine. 
 In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
 
 # Jupyter Demo
