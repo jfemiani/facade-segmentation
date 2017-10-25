@@ -23,7 +23,7 @@ export MYOUTPUT=/tmp/segnet-facade/output
 3. Now you can run a jupyter server using my docker image:
 ```bash
 nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
-    jfemiani/segnet-facade jupyter notebook --allow-root --port ${MYPORT} \
+    jfemiani/segnet-facade jupyter notebook --allow-root --ip=* --port ${MYPORT} \
     /opt/facades/scripts/process.ipynb
 ```
 4. You should see a link on your terminal to `http://localhost:8888/<a bunch of randomy text>`. Copy and paste the link into your browser. 
