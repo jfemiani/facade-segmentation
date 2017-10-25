@@ -29,7 +29,7 @@ nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${
 4. You should see a link on your terminal to `http://localhost:8888/<a bunch of randomy text>`. Copy and paste the link into your browser. 
 
 5. Run each line of the jupyter notebook in order to go through the segmentation process one step at a time. You may also
-   _edit_ those cells to process your own data or to use the CPU instead of the GPU.  For exemple you can replace the line
+   _edit_ those cells to process your own data or to use the CPU instead of the GPU.  For example you can replace the line
    that says
    ```
    caffe.set_device(0)
