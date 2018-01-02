@@ -16,10 +16,13 @@ In this README I will assume you have followed the installation instructions for
 # Jupyter Demo
 I have put jupyter on the docker image so that you can follow along with a simple tutorial in [`scripts/process.ipynb`](scripts/process.ipynb). 
 I will try to describe how to use it here:
-1. Figure out which port you want to use for a jupyter server; the default is port 8888, but you may already be serving a jupyter notebook on that port (if you are not currently using jupyter, just remember that the port is 8888).  Once you have settled on a port, let's save it to an environment variable:
+1. Figure out which domain-name and port you want to use for a jupyter server; the default IP address is localhost, the default port is port 8888, but you may already be serving a jupyter notebook on that port (if you are not currently using jupyter, just remember that the port is 8888).  Once you have settled on a port, let's save it to an environment variable:
    ```bash
+   export MYIP=127.0.0.1
    export MYPORT=8888
    ```
+   > *NOTE:* If you are not on serving from a local machine, you will need the actual IP adress and not 127.0.0.1. You can use the `ifconfig` program and look for `inet addr:` in the output. You will potentially see many devices listed in the output of `ifconfig`, you most likely want to look at the output under `eth0`. 
+   
 2. You will probably want to produce output to a folder on your computer, and you may also want to provide your own inputs via a folder on your computer. For now, I will asume that that the input and output will be placed under your `/tmp` directory. Let's set some environment variables for our input and output locations. 
     ```bash
     mkdir -p /tmp/segnet-facade/output
