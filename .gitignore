@@ -1,3 +1,25 @@
+/scripts/i12-eval/compare_methods.html
+/scripts/anisotropic-training/segnet-GSV-top-9-figure.png
+/scripts/i12-training/deploy/
+*.mp4
+/scripts/anisotropic-training/lr_etrims_2/
+/scripts/anisotropic-training/labelme
+*.dat
+*.dir
+/scripts/anisotropic-training/lr-etrims/*.png
+/scripts/anisotropic-training/data
+/scripts/anisotropic-training/eval_edge_based_on_etrims.dat
+/scripts/anisotropic-training/eval_edge_based_on_etrims.dir
+/scripts/anisotropic-training/etrims/
+/scripts/anisotropic-training/deploy/__for_calculating_BN_stats_modified-training-net.prototxt
+/scripts/anisotropic-training/deploy/__for_calculating_BN_stats_training-net.prototxt
+/scripts/anisotropic-training/deploy/
+/scripts/anisotropic-training/crf_training_history.*
+/scripts/anisotropic-training/crf-deploy/
+*.bak
+/docker/gpu/cuda8.0/one-file/
+/docker/gpu/cuda8.0/one-file.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

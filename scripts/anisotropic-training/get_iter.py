@@ -3,9 +3,6 @@ import os
 from glob import glob
 import re
 
-solver_proto = open('solver.prototxt').read()
-snapshot_prefix = re.search('^snapshot_prefix *: &*\"(.*)\"', solver_proto, re.MULTILINE).group(1).strip(' "')
-
 
 def get_iter(path):
     s = os.path.splitext(path)[0]
@@ -21,10 +18,23 @@ def get_last_iter(names):
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('names', help="A list of possible files", nargs='*', default=glob(snapshot_prefix + "*.solverstate"))
-parser.add_argument('--snapshot', '-s', action='store_true', help="output the name of the snapshot, instead of just the iteration number")
-parser.add_argument('--model', '-m', action='store_true', help="output the name of the model, instead of just the iteration number")
+parser.add_argument('names', 
+                    help="A list of possible files", nargs='*',
+                    default=[])
+parser.add_argument('--snapshot', '-s', action='store_true', 
+                    help="output the name of the snapshot, instead of just the iteration number")
+parser.add_argument('--model', '-m', action='store_true', 
+                    help="output the name of the model, instead of just the iteration number")
+parser.add_argument('--solver', '-p', 
+                    help="The solver.prototxt file", 
+                    default='solver.prototxt')
 args = parser.parse_args()
+
+solver_proto = open(args.solver).read()
+snapshot_prefix = re.search('^snapshot_prefix *: &*\"(.*)\"', solver_proto, re.MULTILINE).group(1).strip(' "')
+
+if len(args.names) == 0:
+    args.names = glob(snapshot_prefix + "*.solverstate")
 
 if args.model and args.snapshot:
     print "Invalid argument, expect _eithe_ `--model` _or_ `--snapshot` but not both."

@@ -1,0 +1,9 @@
+etrims/etrims-db_v1/images/08_etrims-ds/heidelberg_000001_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/basel_000063_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/heidelberg_000025_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/berlin_000027.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/basel_000070_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/basel_000080_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/prague_000002.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/basel_000062_mv0.jpg
+etrims/etrims-db_v1/images/08_etrims-ds/basel_000075_mv0.jpg

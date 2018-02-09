@@ -49,9 +49,10 @@ class InputLayer(caffe.Layer):
         if len(bottom) > 0:
             raise Exception('cannot have bottoms for input layer')
 
-        # make sure you have the right number of "top"s
-        assert len(top) == self.num_labels  # +1 for RGB,  -1 for the 'background' label.
-
+        # make sure we have the right number of "top"s
+        # +1 for RGB,  -1 for the 'background' label.
+        assert len(top) == self.num_labels, "Found {}, expected {}".format(len(top), self.num_labels)
+        
         top[0].reshape(self.batch_size, self.num_channels, self.height, self.width)
 
         # Label 0 is background, we can / should safely ignore it!
