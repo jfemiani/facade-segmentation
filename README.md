@@ -4,14 +4,7 @@
 - An NVIDIA graphics card / GPU with a fair amount of RAM.  I use an 11Gb card for training and inference, you may be able to get by with less.  During inference, my system reports that a bit over 4Gb is used, during training it is closer to 8Gb. You may be able to change the code to use `cpu` mode but I have not run this code on a machine without NVIDA hardware. 
 - A system with a decent amount of RAM. I expect that 32Gb would be a good number; all of my machines have much more than that. 
 
-# Installation
 
-You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code. I have already built a machine and put it on Dockerhub [jfemiani'segnet-facade](https://hub.docker.com/r/jfemiani/segnet-facade/) . You should be able to use that once `nvidia-docker` is installed, but you may also wish to build your own image. To do that  run 
-```
-cd docker/gpu && source build-docker-image.sh
-```
-You may also consider the Dockerfile in [docker/gpu/Dockerfile](docker/gpu/Dockerfile) as instructions on how to configure your own machine. 
-In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
 
 # Jupyter Demo
 I have put jupyter on the docker image so that you can follow along with a simple tutorial in [`scripts/process.ipynb`](scripts/process.ipynb). 
@@ -34,6 +27,12 @@ I will try to describe how to use it here:
     ```bash
     nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
         jfemiani/segnet-facade jupyter notebook --allow-root --ip=* --port ${MYPORT} \
+        /opt/facades/scripts/process.ipynb
+    ```
+    **NOTE** If you are using a newer GPU than the old K40 I had, you will need an image with a newer version of cuda. I build a machine for cuda8 and tagged it `cuda8-cudnn3`, as shown below:
+     ```bash
+     nvidia-docker run -v "${MYOUTPUT}":/output -v "${MYINPUT}":/data -p ${MYPORT}:${MYPORT} \
+        jfemiani/segnet-facade:cuda8-cudnn3 jupyter notebook --allow-root --ip=* --port ${MYPORT} \
         /opt/facades/scripts/process.ipynb
     ```
 4. You should see a link on your terminal to `http://localhost:8888/<a bunch of randomy text>`. Copy and paste the link into your browser. 
@@ -93,6 +92,16 @@ python -m pyfacades --help
 ```
 
 To get the most up-to-date help on how to use the script. 
+
+# Installation
+
+You may may use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation) to run this code. I have already built a machine and put it on Dockerhub [jfemiani/segnet-facade](https://hub.docker.com/r/jfemiani/segnet-facade/) . You should be able to use that once `nvidia-docker` is installed, but you may also wish to build your own image. To do that  run 
+```
+cd docker/gpu && source build-docker-image.sh
+```
+You may also consider the Dockerfile in [docker/gpu/Dockerfile](docker/gpu/Dockerfile) as instructions on how to configure your own machine. 
+In this README I will assume you have followed the installation instructions for nvidia-docker which include putting your current user in 'dockers' group.
+
 # Development
 
 I am using PyCharm to develop this code on an Ubuntu Machine with a
