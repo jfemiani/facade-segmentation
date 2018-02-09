@@ -105,8 +105,8 @@ class Object(object):
         """
         if self.type in (TYPE_POLYGON, TYPE_BOUNDING_BOX):
             (top, left, bottom, right) = self.polygon.bounds()
-            w = right-left
-            h = bottom-top
+            w = int(right-left)
+            h = int(bottom-top)
             mask = Image.new("I", (w, h))
             d = ImageDraw.Draw(mask)
             d.polygon([(px-left, py-top) for (px, py) in self.polygon.points],
@@ -158,7 +158,9 @@ class Object(object):
         self.type = d.pop('type', TYPE_POLYGON)
 
         self.polygon.set_from_dict(d.get('polygon', {}))
-
+    
+    def __repr__(self):
+        return "Object({})".format(self.name)
 
 class ImageSize(object):
     def __init__(self):
@@ -173,10 +175,18 @@ class ImageSize(object):
         """
         self.nrows = d.get('nrows', None)
         self.ncols = d.get('ncols', None)
+        
+    def __repr__(self):
+        return "ImageSize(rows:{},cols:{})".format(self.nrows, self.ncols)
 
 
 class Annotation(object):
-    def __init__(self, path=None, images_root=None, xml_root=None, collection=None):
+    def __init__(self, path=None, 
+                       images_root=None, 
+                       xml_root=None, 
+                       collection=None,
+                       update_image_size=True,
+                       remove_deleted=True):
         super(Annotation, self).__init__()
 
         self.filename = ""
@@ -215,6 +225,12 @@ class Annotation(object):
         if path is not None:
             with open(path) as f:
                 self.parse_xml(f)
+        
+        if update_image_size:
+            self.update_image_size()
+        
+        if remove_deleted:
+            self.remove_deleted()
 
     def parse_xml(self, f, path=None):
         """
@@ -279,6 +295,9 @@ class Annotation(object):
             if not o.deleted:
                 yield o
 
+    def __repr__(self):
+        return "Annoation({}, {} objects)".format(self.filename, len(self.objects))
+    
 
 class Collection(object):
     def __init__(self, root='.', xml_root="Annotations", image_root="Images"):
@@ -289,10 +308,9 @@ class Collection(object):
 
     def guess_from_path(self, annotation_or_image):
         path = os.path.abspath(annotation_or_image)
-        folder = os.path.dirname(annotation_or_image)
-        root = os.path.dirname(folder)
+        collection = os.path.dirname(path)
+        annotations_or_images = os.path.dirname(collection)
+        root = os.path.dirname(annotations_or_images)
         self.root = root
-        if path.endswith('.jpg'):
-            self.image_root = os.path.basename(folder)
-        elif path.endswith('.xml'):
-            self.xml_root = os.path.basename(folder)
+        self.image_root = os.path.join(root, "Images")
+        self.xml_root = os.path.join(root, "Annotations")

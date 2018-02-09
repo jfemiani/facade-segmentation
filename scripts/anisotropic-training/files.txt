@@ -11,9 +11,9 @@ batch1/madrid-0-3-orthographic.xml
 batch1/madrid-0-4-orthographic.xml
 batch1/madrid-0-5-orthographic.xml
 batch1/madrid-1-0-orthographic.xml
+batch1/madrid-1-1-orthographic.xml
 batch1/madrid-1-10-orthographic.xml
 batch1/madrid-1-11-orthographic.xml
-batch1/madrid-1-1-orthographic.xml
 batch1/madrid-1-2-orthographic.xml
 batch1/madrid-1-3-orthographic.xml
 batch1/madrid-1-4-orthographic.xml
@@ -48,8 +48,8 @@ batch1/ny-0-5-orthographic.xml
 batch1/ny-0-6-orthographic.xml
 batch1/ny-0-7-orthographic.xml
 batch1/ny-1-0-orthographic.xml
-batch1/ny-1-10-orthographic.xml
 batch1/ny-1-1-orthographic.xml
+batch1/ny-1-10-orthographic.xml
 batch1/ny-1-2-orthographic.xml
 batch1/ny-1-3-orthographic.xml
 batch1/ny-1-4-orthographic.xml

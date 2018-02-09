@@ -1,0 +1,9 @@
+data/training/independant_12_layers/cmp/npy/stack_0454.npy
+data/training/independant_12_layers/cmp/npy/stack_0119.npy
+data/training/independant_12_layers/cmp/npy/stack_0082.npy
+data/training/independant_12_layers/cmp/npy/stack_0506.npy
+data/training/independant_12_layers/cmp/npy/stack_0174.npy
+data/training/independant_12_layers/cmp/npy/stack_0293.npy
+data/training/independant_12_layers/cmp/npy/stack_0487.npy
+data/training/independant_12_layers/cmp/npy/stack_0316.npy
+data/training/independant_12_layers/cmp/npy/stack_0512.npy

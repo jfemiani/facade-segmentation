@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+INITIAL_WEIGHTS=${PWD}/initial_weights.caffemodel
+# INITIAL_WEIGHTS=/home/shared/Projects/Facades/src/models/facades_12_independent_labels.99000.caffemodel
+
+caffe.bin train -solver=solver.prototxt -weights ${INITIAL_WEIGHTS} -gpu=0

@@ -1,0 +1,9 @@
+data/training/independant_12_layers/ours/npy/ny_many-0256_tile0001.npy
+data/training/independant_12_layers/ours/npy/ny_many-0544_tile0002.npy
+data/training/independant_12_layers/ours/npy/ny-0-7-orthographic_tile0001.npy
+data/training/independant_12_layers/ours/npy/orthographic12_tile0001.npy
+data/training/independant_12_layers/ours/npy/ny_many-0300_tile0001.npy
+data/training/independant_12_layers/ours/npy/ny_many-0536_tile0002.npy
+data/training/independant_12_layers/ours/npy/madrid-4-4-orthographic_tile0001.npy
+data/training/independant_12_layers/ours/npy/regent_many-0276_tile0001.npy
+data/training/independant_12_layers/ours/npy/ny_many-0330_tile0001.npy

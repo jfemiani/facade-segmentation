@@ -1,0 +1,120 @@
+air_conditioner:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+awning:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+balcony:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+bay:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+cornice:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+deco:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+door:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+facade:
+    fill: 2
+    outline: 3
+    radius: 10
+    vcuts: true
+fire_escape_balcony:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+fire_escape_ladder:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+flag:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+ledge:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+molding:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+negative:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+obstruction:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+pillar:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+roof:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+shop:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+sign:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+sill:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+sky:
+    fill: 2
+    outline: 1
+    radius: 15
+    vcuts: false
+tree:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+unlabeled:
+    fill: 2
+    outline: 1
+    radius: 1
+    vcuts: false
+window:
+    fill: 2
+    outline: 3
+    radius: 3
+    vcuts: false

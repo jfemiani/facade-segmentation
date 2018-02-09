@@ -80,13 +80,17 @@ def make_test_files(testable_net_path, train_weights_path, num_iterations,
         for bn_var in bn_vars:
             bn_avg_var[bn_var] += np.squeeze(res[bn_var])
         cla()
+        suptitle('progress: {}/{}'.format(i, num_iterations))
         subplot(121)
-        imshow(net.blobs['data'].data[0].transpose(1,2,0)/255.)
+        imshow(net.blobs['data'].data[0,:3].transpose(1,2,0)/255.)
         subplot(122)
         imshow(net.blobs['conv-window'].data[0].argmax(0))
         show()
         gcf().canvas.draw()
-        pause(0.0001)
+        try:
+            pause(0.0001)
+        except:
+            pass
         print 'progress: {}/{}'.format(i, num_iterations)
 
     # compute average means and vars
