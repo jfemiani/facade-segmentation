@@ -1,3 +1,4 @@
+*.caffemodel
 /scripts/i12-eval/compare_methods.html
 /scripts/anisotropic-training/segnet-GSV-top-9-figure.png
 /scripts/i12-training/deploy/
