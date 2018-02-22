@@ -5,7 +5,7 @@ import numpy as np
 
 def softmax(a, axis=0):
     a = np.exp(a - a.max(axis=axis))
-    a /= a.max(axis=axis)
+    a /= a.sum(axis=axis)
     return a
 
 

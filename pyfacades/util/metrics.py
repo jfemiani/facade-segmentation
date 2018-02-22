@@ -109,9 +109,15 @@ def match_objects_uniquely(candidates, targets, threshold=0.5):
                 g.add_edge(t, c, weight=current_iou)
 
     target_set = set(targets)
+    # Between versions 1.9 and 2.2, networkx did something evil here. 
+    # They changed the _semantics_ AND the _api_ without changing the name OR deprecating first.
+    # In the 2.2 API, it returns a set of edges in arbitrary order -- e.g. (t, c) or (c,t) are the same
+    # and one does not know which will be returned. 
+    # By contrast, in the 1.9 API it would return each edge twice; that is (t,c) and (c,t) would both 
+    # be returned (in a sencse, via kv pairs in a dict).
     matching = nx.max_weight_matching(g, maxcardinality=True)  # <- a dict with  v->c and c->v both
-    hits = [(t, c) for (t, c) in matching.items() if t in target_set]
-    return hits
+    #hits = [(t, c) for (t, c) in matching if t in target_set]
+    return matching # hits
 
 
 class Metrics(object):
