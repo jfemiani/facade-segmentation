@@ -13,7 +13,7 @@ from pyfacades import PROJECT_ROOT
 
 # Use the environment to pass variables in.....
 FOLD = os.environ.get('FOLD', 1)
-DATA_ROOT = '/media/femianjc/My Book/independant_12_layers'
+DATA_ROOT = PROJECT_ROOT
 FOLD_PATH = join(DATA_ROOT,'data/training/independant_12_layers/fold_{:02}'.format(FOLD))
 TRAIN_PATH = join(FOLD_PATH, 'train.txt')
 EVAL_PATH = join(FOLD_PATH, 'eval.txt')

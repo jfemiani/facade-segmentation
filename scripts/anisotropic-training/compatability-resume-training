@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+caffe.bin train -solver=compatability-solver.prototxt \
+                -snapshot $(./get_iter.py -s -p compatability-solver.prototxt) \
+                -gpu=3

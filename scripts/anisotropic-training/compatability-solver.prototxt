@@ -1,0 +1,15 @@
+test_iter: 1
+test_interval: 10000000
+base_lr: 1e-05
+display: 10
+max_iter: 250000
+lr_policy: "step"
+gamma: 1.0
+momentum: 0.95
+weight_decay: 0.0005
+stepsize: 10000000
+snapshot: 1000
+snapshot_prefix: "/data/models/compatability_net"
+solver_mode: GPU
+net: "/root/low-rank/scripts/anisotropic-training/compatability-training-net.prototxt"
+test_initialization: false
